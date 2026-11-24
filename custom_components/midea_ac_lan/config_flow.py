@@ -253,35 +253,42 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     self.found_device[CONF_NAME] = device_info.get("name")
                     self.found_device[CONF_SUBTYPE] = device_info.get("model_number")
                 if device.get(CONF_PROTOCOL) == 3:
+                    candidates = [self.cloud]
+                    # 美的美居 (Meiju) 云：先用自己的账号走 /v2/iot/secure/getToken
+                    # （MeijuCloud.get_keys 已重写为该端点）；拿不到可用的 token/key
+                    # 时再回退到 MSmartHome 预设账号，保持对老设备的兼容。
                     if self.account[CONF_SERVER] == "美的美居":
-                        _LOGGER.debug(f"Try to get the Token and the Key use the preset MSmartHome account")
-                        self.cloud = get_midea_cloud(
+                        candidates.append(get_midea_cloud(
                             "MSmartHome",
                             self.session,
                             bytes.fromhex(format((PRESET_ACCOUNT[0] ^ PRESET_ACCOUNT[1]), 'X')).decode('ASCII'),
-                            bytes.fromhex(format((PRESET_ACCOUNT[0] ^ PRESET_ACCOUNT[2]), 'X')).decode('ASCII'))
-                        if not await self.cloud.login():
-                            return await self.async_step_auto(error="preset_account")
-                    keys = await self.cloud.get_keys(user_input[CONF_DEVICE])
-                    for method, key in keys.items():
-                        dm = MiedaDevice(
-                            name="",
-                            device_id=device_id,
-                            device_type=device.get(CONF_TYPE),
-                            ip_address=device.get(CONF_IP_ADDRESS),
-                            port=device.get(CONF_PORT),
-                            token=key["token"],
-                            key=key["key"],
-                            protocol=3,
-                            model=device.get(CONF_MODEL),
-                            subtype=0,
-                            attributes={}
-                        )
-                        if dm.connect(refresh_status=False):
-                            dm.close_socket()
-                            self.found_device[CONF_TOKEN] = key["token"]
-                            self.found_device[CONF_KEY] = key["key"]
-                            return await self.async_step_manually()
+                            bytes.fromhex(format((PRESET_ACCOUNT[0] ^ PRESET_ACCOUNT[2]), 'X')).decode('ASCII')))
+                    for candidate in candidates:
+                        if candidate is not self.cloud:
+                            _LOGGER.debug("Try the preset MSmartHome account for the Token and the Key")
+                            if not await candidate.login():
+                                continue
+                        keys = await candidate.get_keys(user_input[CONF_DEVICE])
+                        for method, key in keys.items():
+                            dm = MiedaDevice(
+                                name="",
+                                device_id=device_id,
+                                device_type=device.get(CONF_TYPE),
+                                ip_address=device.get(CONF_IP_ADDRESS),
+                                port=device.get(CONF_PORT),
+                                token=key["token"],
+                                key=key["key"],
+                                protocol=3,
+                                model=device.get(CONF_MODEL),
+                                subtype=0,
+                                attributes={}
+                            )
+                            if dm.connect(refresh_status=False):
+                                dm.close_socket()
+                                self.cloud = candidate
+                                self.found_device[CONF_TOKEN] = key["token"]
+                                self.found_device[CONF_KEY] = key["key"]
+                                return await self.async_step_manually()
                     return await self.async_step_auto(error="connect_error")
                 else:
                     return await self.async_step_manually()
@@ -441,12 +448,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         refresh_interval = self._config_entry.options.get(
             CONF_REFRESH_INTERVAL, 30
         )
-        extra_sensors = list(set(sensors.keys()) & set(self._config_entry.options.get(
-            CONF_SENSORS, []
-        )))
-        extra_switches = list(set(switches.keys()) & set(self._config_entry.options.get(
-            CONF_SWITCHES, []
-        )))
+        # 首次未配置选项时，默认选中该型号的全部传感器/开关（开箱即见实体）。
+        default_sensors = list(sensors.keys()) if CONF_SENSORS not in self._config_entry.options else self._config_entry.options.get(CONF_SENSORS, [])
+        default_switches = list(switches.keys()) if CONF_SWITCHES not in self._config_entry.options else self._config_entry.options.get(CONF_SWITCHES, [])
+        extra_sensors = list(set(sensors.keys()) & set(default_sensors))
+        extra_switches = list(set(switches.keys()) & set(default_switches))
         customize = self._config_entry.options.get(
             CONF_CUSTOMIZE, ""
         )

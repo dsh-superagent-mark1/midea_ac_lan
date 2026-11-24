@@ -15,12 +15,11 @@ from .const import (
 async def async_setup_entry(hass, config_entry, async_add_entities):
     device_id = config_entry.data.get(CONF_DEVICE_ID)
     device = hass.data[DOMAIN][DEVICES].get(device_id)
-    extra_sensors = config_entry.options.get(
-        CONF_SENSORS, []
-    )
+    # 未配置选项时默认启用该型号全部传感器，保证开箱即见实体。
+    extra_sensors = config_entry.options.get(CONF_SENSORS, None)
     sensors = []
     for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
-        if config["type"] == Platform.SENSOR and entity_key in extra_sensors:
+        if config["type"] == Platform.SENSOR and (extra_sensors is None or entity_key in extra_sensors):
             sensor = MideaSensor(device, entity_key)
             sensors.append(sensor)
     async_add_entities(sensors)

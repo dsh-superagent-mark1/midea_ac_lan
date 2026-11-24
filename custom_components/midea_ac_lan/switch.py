@@ -15,12 +15,11 @@ from .const import (
 async def async_setup_entry(hass, config_entry, async_add_entities):
     device_id = config_entry.data.get(CONF_DEVICE_ID)
     device = hass.data[DOMAIN][DEVICES].get(device_id)
-    extra_switches = config_entry.options.get(
-        CONF_SWITCHES, []
-    )
+    # 未配置选项时默认启用该型号全部开关，保证开箱即见实体。
+    extra_switches = config_entry.options.get(CONF_SWITCHES, None)
     switches = []
     for entity_key, config in MIDEA_DEVICES[device.device_type]["entities"].items():
-        if config["type"] == Platform.SWITCH and entity_key in extra_switches:
+        if config["type"] == Platform.SWITCH and (extra_switches is None or entity_key in extra_switches):
             dev = MideaSwitch(device, entity_key)
             switches.append(dev)
     async_add_entities(switches)
