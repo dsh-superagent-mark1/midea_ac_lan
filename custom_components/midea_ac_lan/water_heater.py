@@ -2,15 +2,17 @@
 from homeassistant.components.water_heater import *
 from homeassistant.const import (
     Platform,
-    TEMP_CELSIUS,
-    PRECISION_WHOLE,
-    PRECISION_HALVES,
+    UnitOfTemperature,
     ATTR_TEMPERATURE,
     CONF_DEVICE_ID,
     CONF_SWITCHES,
     STATE_ON,
     STATE_OFF,
 )
+
+TEMP_CELSIUS = UnitOfTemperature.CELSIUS
+PRECISION_WHOLE = 0
+PRECISION_HALVES = 0.5
 from .const import (
     DOMAIN,
     DEVICES

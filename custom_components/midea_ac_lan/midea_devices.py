@@ -1,17 +1,27 @@
 from homeassistant.const import (
     Platform,
-    TIME_DAYS,
-    TIME_HOURS,
-    TIME_MINUTES,
-    TIME_SECONDS,
-    TEMP_CELSIUS,
-    POWER_WATT,
+    UnitOfTime,
+    UnitOfTemperature,
+    UnitOfPower,
     PERCENTAGE,
-    VOLUME_LITERS,
-    ENERGY_KILO_WATT_HOUR,
-    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
-    CONCENTRATION_PARTS_PER_MILLION
+    UnitOfVolume,
+    UnitOfEnergy,
 )
+
+# HA 2025.x removed the legacy unit constants from homeassistant.const in
+# favour of the UnitOf* enums. Keep the old names working via aliases.
+TIME_DAYS = UnitOfTime.DAYS
+TIME_HOURS = UnitOfTime.HOURS
+TIME_MINUTES = UnitOfTime.MINUTES
+TIME_SECONDS = UnitOfTime.SECONDS
+TEMP_CELSIUS = UnitOfTemperature.CELSIUS
+POWER_WATT = UnitOfPower.WATT
+VOLUME_LITERS = UnitOfVolume.LITERS
+ENERGY_KILO_WATT_HOUR = UnitOfEnergy.KILO_WATT_HOUR
+# Concentration units were also removed from homeassistant.const; use the
+# literal strings they previously defined.
+CONCENTRATION_MICROGRAMS_PER_CUBIC_METER = "\u00b5g/m\u00b3"
+CONCENTRATION_PARTS_PER_MILLION = "ppm"
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import SensorStateClass, SensorDeviceClass
 from .midea.devices.x26.device import DeviceAttributes as X26Attributes
