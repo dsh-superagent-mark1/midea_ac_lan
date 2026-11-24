@@ -1,6 +1,8 @@
 import logging
 from .message import (
     DRYER_PROGRAMS,
+    PROGRAM_LABELS_EN,
+    PROGRAM_LABELS_ZH,
     PROGRAM_BY_VALUE,
     MessageQuery,
     MessagePower,
@@ -63,8 +65,16 @@ class MideaDADevice(MiedaDevice):
 
     @property
     def preset_modes(self):
-        """All program names supported by the dryer, as HA select options."""
+        """All program keys supported by the dryer (protocol values)."""
         return list(DRYER_PROGRAMS.keys())
+
+    @property
+    def program_labels(self):
+        """Program key -> display name, localised to the HA language."""
+        lang = getattr(self, "hass_language", None) or "en"
+        table = PROGRAM_LABELS_ZH if str(lang).lower().startswith("zh") \
+            else PROGRAM_LABELS_EN
+        return table
 
     def build_query(self):
         return [MessageQuery(self._protocol_version)]
@@ -90,10 +100,17 @@ class MideaDADevice(MiedaDevice):
             message.power = value
             self.build_send(message)
         elif attr == DeviceAttributes.program:
-            # Selecting a program only stores it locally until the next
-            # start; starting with program=None keeps whatever the device
-            # currently has.
+            # Selecting a program must reach the device, otherwise the next
+            # status refresh restores the old value. Send a SET frame that
+            # keeps the current run/pause state but carries the new program.
             self._attributes[DeviceAttributes.program] = value
+            message = MessageStart(self._protocol_version)
+            is_running = self._attributes.get(DeviceAttributes.running_status) in (
+                "start", "pause") or self._attributes.get(DeviceAttributes.start)
+            message.start = bool(is_running)
+            message.washing_data = self._attributes[DeviceAttributes.washing_data]
+            message.program = DRYER_PROGRAMS.get(value) if isinstance(value, str) else None
+            self.build_send(message)
         elif attr == DeviceAttributes.start:
             message = MessageStart(self._protocol_version)
             message.start = value

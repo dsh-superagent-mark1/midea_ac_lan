@@ -1,119 +1,178 @@
 {
-    "config": {
-        "error": {
-            "preset_account": "预置账户登录失败，请报告此问题",
-            "login_failed": "登录失败, 用户名或密码错",
-            "no_devices": "未在网络上发现可用新设备",
-            "device_exist": "设备已经存在, 请添加其它设备",
-            "config_incorrect": "配置信息不正确, 请检查后重新输入",
-            "connect_error": "无法连接到指定设备",
-            "invalid_token": "Token或Key格式不正确"
-        },
-        "step": {
-            "user": {
-                "data": {
-                    "way": "添加方式"
-                },
-                "description": "选择添加设备的方式",
-                "title": "添加新设备"
-            },
-            "login": {
-                "data": {
-                    "account": "账号",
-                    "password": "密码"
-                },
-                "description": "登录并保存你的美的账户，仅用于获取添加设备时设备信息\n添加设备完成后，你可以删除该配置",
-                "title": "登录"
-            },
-            "discovery": {
-                "description": "输入设备的IP地址, 输入\"auto\"自动搜索设备\n你也可以使用IP地址在指定网络中搜索, 比如`192.168.1.255`",
-                "title": "搜索",
-                "data": {
-                    "ip_address": "IP地址"
-                }
-            },
-            "list":{
-                "description": "{table}",
-                "title": "设备"
-            },
-            "auto": {
-                "data": {
-                    "device": "设备"
-                },
-                "description": "选择设备并添加",
-                "title": "发现新设备"
-            },
-            "manually": {
-                "data": {
-                    "name": "名称(如客厅空调)",
-                    "device_id": "设备编号",
-                    "type": "设备类型",
-                    "ip_address": "IP地址",
-                    "port": "端口",
-                    "model": "型号",
-                    "subtype": "子型号",
-                    "protocol": "协议版本",
-                    "token": "Token",
-                    "key": "Key"
-                },
-                "description": "配置设备参数",
-                "title": "新设备"
-            }
-        }
+  "config": {
+    "error": {
+      "preset_account": "预置账户登录失败，请报告此问题",
+      "login_failed": "登录失败, 用户名或密码错",
+      "no_devices": "未在网络上发现可用新设备",
+      "device_exist": "设备已经存在, 请添加其它设备",
+      "config_incorrect": "配置信息不正确, 请检查后重新输入",
+      "connect_error": "无法连接到指定设备",
+      "invalid_token": "Token或Key格式不正确"
     },
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "ip_address": "IP地址",
-                    "refresh_interval": "刷新间隔(设0为不进行主动刷新)",
-                    "sensors": "扩展传感器",
-                    "switches": "扩展控制",
-                    "customize": "自定义"
-                },
-                "title": "配置"
-            }
+    "step": {
+      "user": {
+        "data": {
+          "way": "添加方式"
         },
-        "abort": {
-            "account_option": "账户配置不支持此操作.\n点击\"添加设备\"完成添加新设备的操作"
-        }
-    },
-    "services": {
-        "set_attribute": {
-            "name": "设置属性",
-            "description": "设置设备的属性值",
-            "fields" : {
-                "device_id": {
-                    "name": "设备编码",
-                    "description": "设备编码(Deivce ID)"
-                },
-                "attribute": {
-                    "name": "属性",
-                    "description": "要设置的属性名称"
-                },
-                "value": {
-                    "name": "值",
-                    "description": "要设置的属性值"
-                }
-            }
+        "description": "选择添加设备的方式",
+        "title": "添加新设备"
+      },
+      "login": {
+        "data": {
+          "account": "账号",
+          "password": "密码"
         },
-        "send_command": {
-            "name": "自定义命令",
-            "description": "向设备发送一个自定义命令",
-            "fields" : {
-                "device_id": {
-                    "name": "设备编码",
-                    "description": "设备编码(Device ID)"
-                },
-                "cmd_type": {
-                    "name": "命令类型",
-                    "description": "命令类型，可以为2(查询)或3(设置)"
-                },
-                "cmd_body": {
-                    "name": "命令体",
-                    "description": "命令的消息体(不包括前部的MSmart协议头及后部的校验码)"
-                }
-            }
+        "description": "登录并保存你的美的账户，仅用于获取添加设备时设备信息\n添加设备完成后，你可以删除该配置",
+        "title": "登录"
+      },
+      "discovery": {
+        "description": "输入设备的IP地址, 输入\"auto\"自动搜索设备\n你也可以使用IP地址在指定网络中搜索, 比如`192.168.1.255`",
+        "title": "搜索",
+        "data": {
+          "ip_address": "IP地址"
         }
+      },
+      "list": {
+        "description": "{table}",
+        "title": "设备"
+      },
+      "auto": {
+        "data": {
+          "device": "设备"
+        },
+        "description": "选择设备并添加",
+        "title": "发现新设备"
+      },
+      "manually": {
+        "data": {
+          "name": "名称(如客厅空调)",
+          "device_id": "设备编号",
+          "type": "设备类型",
+          "ip_address": "IP地址",
+          "port": "端口",
+          "model": "型号",
+          "subtype": "子型号",
+          "protocol": "协议版本",
+          "token": "Token",
+          "key": "Key"
+        },
+        "description": "配置设备参数",
+        "title": "新设备"
+      }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "ip_address": "IP地址",
+          "refresh_interval": "刷新间隔(设0为不进行主动刷新)",
+          "sensors": "扩展传感器",
+          "switches": "扩展控制",
+          "customize": "自定义"
+        },
+        "title": "配置"
+      }
+    },
+    "abort": {
+      "account_option": "账户配置不支持此操作.\n点击\"添加设备\"完成添加新设备的操作"
+    }
+  },
+  "services": {
+    "set_attribute": {
+      "name": "设置属性",
+      "description": "设置设备的属性值",
+      "fields": {
+        "device_id": {
+          "name": "设备编码",
+          "description": "设备编码(Deivce ID)"
+        },
+        "attribute": {
+          "name": "属性",
+          "description": "要设置的属性名称"
+        },
+        "value": {
+          "name": "值",
+          "description": "要设置的属性值"
+        }
+      }
+    },
+    "send_command": {
+      "name": "自定义命令",
+      "description": "向设备发送一个自定义命令",
+      "fields": {
+        "device_id": {
+          "name": "设备编码",
+          "description": "设备编码(Device ID)"
+        },
+        "cmd_type": {
+          "name": "命令类型",
+          "description": "命令类型，可以为2(查询)或3(设置)"
+        },
+        "cmd_body": {
+          "name": "命令体",
+          "description": "命令的消息体(不包括前部的MSmart协议头及后部的校验码)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "select": {
+      "dryer_program": {
+        "name": "干衣程序",
+        "state": {
+          "cotton": "棉织物",
+          "fiber": "化纤",
+          "mixed_wash": "混合",
+          "jean": "牛仔",
+          "bedsheet": "床单",
+          "outdoor": "户外",
+          "down_jacket": "羽绒服",
+          "plush": "毛绒",
+          "wool": "羊毛",
+          "dehumidify": "除湿",
+          "cold_air_fresh_air": "冷风清新",
+          "hot_air_dry": "热风烘干",
+          "sport_clothes": "运动服",
+          "underwear": "内衣",
+          "baby_clothes": "婴儿衣物",
+          "shirt": "衬衫",
+          "standard": "标准",
+          "quick_dry": "快速烘干",
+          "fresh_air": "清新空气",
+          "low_temp_dry": "低温烘干",
+          "eco_dry": "节能烘干",
+          "quick_dry_30": "快速烘干30分",
+          "towel": "毛巾",
+          "intelligent_dry": "智能烘干",
+          "steam_care": "蒸汽护理",
+          "big": "大件",
+          "fixed_time_dry": "定时烘干",
+          "night_dry": "夜间烘干",
+          "bracket_dry": "衣架烘干",
+          "western_trouser": "西裤",
+          "dehumidification": "除湿",
+          "smart_dry": "智慧烘干",
+          "four_piece_suit": "四件套",
+          "warm_clothes": "暖衣",
+          "quick_dry_20": "快速烘干20分",
+          "steam_sterilize": "蒸汽除菌",
+          "enzyme": "酵素",
+          "big_60": "大件60分",
+          "steam_no_iron": "蒸汽免熨",
+          "air_wash": "空气洗",
+          "bed_clothes": "床品",
+          "little_fast_dry": "小件快烘",
+          "small_piece_dry": "小件烘干",
+          "big_dry": "大件烘干",
+          "wool_nurse": "羊毛护理",
+          "sun_quilt": "晒被",
+          "fresh_remove_smell": "清新去味",
+          "bucket_self_clean": "滤网自清洁",
+          "silk": "丝绸",
+          "sterilize": "除菌"
+        }
+      }
+    }
+  }
 }

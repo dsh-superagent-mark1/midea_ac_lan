@@ -33,7 +33,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def update_listener(hass, config_entry):
-    await hass.config_entries.async_forward_entry_unloads(config_entry, ALL_PLATFORM)
+    await hass.config_entries.async_unload_platforms(config_entry, ALL_PLATFORM)
     await hass.config_entries.async_forward_entry_setups(config_entry, ALL_PLATFORM)
     device_id = config_entry.data.get(CONF_DEVICE_ID)
     customize = config_entry.options.get(
@@ -180,5 +180,5 @@ async def async_unload_entry(hass: HomeAssistant, config_entry):
         if dm is not None:
             dm.close()
         hass.data[DOMAIN][DEVICES].pop(device_id)
-    await hass.config_entries.async_forward_entry_unloads(config_entry, ALL_PLATFORM)
+    await hass.config_entries.async_unload_platforms(config_entry, ALL_PLATFORM)
     return True

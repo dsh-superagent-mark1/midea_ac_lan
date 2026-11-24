@@ -1526,6 +1526,7 @@ MIDEA_DEVICES = {
                 "type": Platform.SELECT,
                 "name": "Program",
                 "options": "preset_modes",
+                "translation_key": "dryer_program",
                 "icon": "mdi:tumble-dryer"
             },
             DCAttributes.running_status: {

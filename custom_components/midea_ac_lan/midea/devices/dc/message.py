@@ -61,6 +61,115 @@ DRYER_PROGRAMS = {
 }
 PROGRAM_BY_VALUE = {v: k for k, v in DRYER_PROGRAMS.items()}
 
+# Localised program names (zh / en). Kept in step with
+# translations/*.json -> entity.select.dryer_program.state.
+PROGRAM_LABELS_ZH = {
+    "cotton": "棉织物",
+    "fiber": "化纤",
+    "mixed_wash": "混合",
+    "jean": "牛仔",
+    "bedsheet": "床单",
+    "outdoor": "户外",
+    "down_jacket": "羽绒服",
+    "plush": "毛绒",
+    "wool": "羊毛",
+    "dehumidify": "除湿",
+    "cold_air_fresh_air": "冷风清新",
+    "hot_air_dry": "热风烘干",
+    "sport_clothes": "运动服",
+    "underwear": "内衣",
+    "baby_clothes": "婴儿衣物",
+    "shirt": "衬衫",
+    "standard": "标准",
+    "quick_dry": "快速烘干",
+    "fresh_air": "清新空气",
+    "low_temp_dry": "低温烘干",
+    "eco_dry": "节能烘干",
+    "quick_dry_30": "快速烘干30分",
+    "towel": "毛巾",
+    "intelligent_dry": "智能烘干",
+    "steam_care": "蒸汽护理",
+    "big": "大件",
+    "fixed_time_dry": "定时烘干",
+    "night_dry": "夜间烘干",
+    "bracket_dry": "衣架烘干",
+    "western_trouser": "西裤",
+    "dehumidification": "除湿",
+    "smart_dry": "智慧烘干",
+    "four_piece_suit": "四件套",
+    "warm_clothes": "暖衣",
+    "quick_dry_20": "快速烘干20分",
+    "steam_sterilize": "蒸汽除菌",
+    "enzyme": "酵素",
+    "big_60": "大件60分",
+    "steam_no_iron": "蒸汽免熨",
+    "air_wash": "空气洗",
+    "bed_clothes": "床品",
+    "little_fast_dry": "小件快烘",
+    "small_piece_dry": "小件烘干",
+    "big_dry": "大件烘干",
+    "wool_nurse": "羊毛护理",
+    "sun_quilt": "晒被",
+    "fresh_remove_smell": "清新去味",
+    "bucket_self_clean": "滤网自清洁",
+    "silk": "丝绸",
+    "sterilize": "除菌",
+}
+
+PROGRAM_LABELS_EN = {
+    "cotton": "Cotton",
+    "fiber": "Fiber",
+    "mixed_wash": "Mixed Wash",
+    "jean": "Jean",
+    "bedsheet": "Bedsheet",
+    "outdoor": "Outdoor",
+    "down_jacket": "Down Jacket",
+    "plush": "Plush",
+    "wool": "Wool",
+    "dehumidify": "Dehumidify",
+    "cold_air_fresh_air": "Cold Air Fresh",
+    "hot_air_dry": "Hot Air Dry",
+    "sport_clothes": "Sport Clothes",
+    "underwear": "Underwear",
+    "baby_clothes": "Baby Clothes",
+    "shirt": "Shirt",
+    "standard": "Standard",
+    "quick_dry": "Quick Dry",
+    "fresh_air": "Fresh Air",
+    "low_temp_dry": "Low Temp Dry",
+    "eco_dry": "Eco Dry",
+    "quick_dry_30": "Quick Dry 30min",
+    "towel": "Towel",
+    "intelligent_dry": "Intelligent Dry",
+    "steam_care": "Steam Care",
+    "big": "Big",
+    "fixed_time_dry": "Fixed Time Dry",
+    "night_dry": "Night Dry",
+    "bracket_dry": "Bracket Dry",
+    "western_trouser": "Western Trouser",
+    "dehumidification": "Dehumidification",
+    "smart_dry": "Smart Dry",
+    "four_piece_suit": "Four Piece Suit",
+    "warm_clothes": "Warm Clothes",
+    "quick_dry_20": "Quick Dry 20min",
+    "steam_sterilize": "Steam Sterilize",
+    "enzyme": "Enzyme",
+    "big_60": "Big 60min",
+    "steam_no_iron": "Steam No Iron",
+    "air_wash": "Air Wash",
+    "bed_clothes": "Bed Clothes",
+    "little_fast_dry": "Little Fast Dry",
+    "small_piece_dry": "Small Piece Dry",
+    "big_dry": "Big Dry",
+    "wool_nurse": "Wool Nurse",
+    "sun_quilt": "Sun Quilt",
+    "fresh_remove_smell": "Fresh Remove Smell",
+    "bucket_self_clean": "Filter Self Clean",
+    "silk": "Silk",
+    "sterilize": "Sterilize",
+}
+
+
 RUNNING_STATUS = {
     1: "standby",
     2: "start",
@@ -140,17 +249,22 @@ class MessageStart(MessageDCBase):
 
     @property
     def _body(self):
-        data = bytearray(self.washing_data) if self.washing_data else bytearray([])
-        if len(data) < 4:
-            data = bytearray([0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                              0xFF, 0xFF, 0xFF, 0xFF])
-        if self.program is not None:
-            data[1] = self.program & 0xFF
-        data[0] = 0xFF
-        if self.start:
-            return bytearray([0xFF, 0x01]) + data
-        else:
-            return bytearray([0xFF, 0x00]) + data
+        # MessageRequest.body prepends the body_type, so _body[0] lands on
+        # frame byte 12: _body[0]=power, [1]=control_status, [2]=reserved,
+        # [3]=program, then the remaining washing-data tail (wd[2:]).
+        wd = bytearray(self.washing_data) if self.washing_data else bytearray([])
+        tail = bytearray(wd[2:]) if len(wd) > 2 else bytearray([])
+        if len(tail) < 10:
+            tail = bytearray([0x0A, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+                              0x00, 0x00])
+        program = self.program if self.program is not None else (wd[1] if len(wd) > 1 else 0x00)
+        body = bytearray([
+            0xFF,                                   # power (forced on)
+            0x01 if self.start else 0x00,           # control_status
+            0xFF,                                   # reserved
+            program & 0xFF,                         # program
+        ])
+        return body + tail
 
 
 class DCGeneralMessageBody(MessageBody):

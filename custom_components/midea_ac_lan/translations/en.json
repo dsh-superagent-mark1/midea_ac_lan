@@ -1,119 +1,178 @@
 {
-    "config": {
-        "error": {
-            "preset_account": "Failed to login with preset account, please report this issue",
-            "login_failed": "Failed to login, account or password was wrong",
-            "no_devices": "No new available appliances found on the network",
-            "device_exist": "Appliance is already configured",
-            "config_incorrect": "The configuration is incorrect",
-            "connect_error": "Can't connect to appliance",
-            "invalid_token": "Token or Key in an incorrect format"
-        },
-        "step": {
-            "user": {
-                "data": {
-                    "way": "Adding appliances"
-                },
-                "description": "Choose the way to add a appliance",
-                "title": "Add new appliance"
-            },
-            "login": {
-                "data": {
-                    "account": "Account",
-                    "password": "Password"
-                },
-                "description": "Login and storage your Midea account only for getting the appliance info.\nYou can remove this configuration after all appliance configured.",
-                "title": "Login"
-            },
-            "discovery": {
-                "description": "IP address for device, enter \"auto\" to discover automatically\nYou can also use an IP address to search within a specified network, such as \"192.168.1.255\"",
-                "title": "Search",
-                "data": {
-                    "ip_address": "IP address"
-                }
-            },
-            "list":{
-                "description": "{table}",
-                "title": "Appliances"
-            },
-            "auto": {
-                "data": {
-                    "device": "Appliances"
-                },
-                "description": "Choose a appliance to add",
-                "title": "New appliance found"
-            },
-            "manually": {
-                "data": {
-                    "name": "Name (e.g. Living room AC)",
-                    "device_id": "Appliance code",
-                    "type": "Type",
-                    "ip_address": "IP address",
-                    "port": "Port",
-                    "model": "Model",
-                    "subtype": "Subtype",
-                    "protocol": "Protocol",
-                    "token": "Token",
-                    "key": "Key"
-                },
-                "description": "Configuration of appliance",
-                "title": "New appliance"
-            }
-        }
+  "config": {
+    "error": {
+      "preset_account": "Failed to login with preset account, please report this issue",
+      "login_failed": "Failed to login, account or password was wrong",
+      "no_devices": "No new available appliances found on the network",
+      "device_exist": "Appliance is already configured",
+      "config_incorrect": "The configuration is incorrect",
+      "connect_error": "Can't connect to appliance",
+      "invalid_token": "Token or Key in an incorrect format"
     },
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "ip_address": "IP address",
-                    "refresh_interval": "Refresh interval (0 means not refreshing actively)",
-                    "sensors": "Extra sensors",
-                    "switches": "Extra controls",
-                    "customize": "Customize"
-                },
-                "title": "Configure"
-            }
+    "step": {
+      "user": {
+        "data": {
+          "way": "Adding appliances"
         },
-        "abort": {
-            "account_option": "The account does not supports this operation.\nClick \"ADD DEVICE\" to  add a new device."
-        }
-    },
-    "services": {
-        "set_attribute": {
-            "name": "Set attribute",
-            "description": "Set the attribute value of device",
-            "fields" : {
-                "device_id": {
-                    "name": "Appliance code",
-                    "description": "The appliance code (Device ID) of appliance"
-                },
-                "attribute": {
-                    "name": "Attribute",
-                    "description": "The attribute name want to set"
-                },
-                "value": {
-                    "name": "Value",
-                    "description": "The attribute value want to set"
-                }
-            }
+        "description": "Choose the way to add a appliance",
+        "title": "Add new appliance"
+      },
+      "login": {
+        "data": {
+          "account": "Account",
+          "password": "Password"
         },
-        "send_command": {
-            "name": "Customize command",
-            "description": "Send a customize command to device",
-            "fields" : {
-                "device_id": {
-                    "name": "Appliance code",
-                    "description": "The appliance code (Device ID) of appliance"
-                },
-                "cmd_type": {
-                    "name": "command type",
-                    "description": "The type of command，should be 3（query) or 2（set)"
-                },
-                "cmd_body": {
-                    "name": "command body",
-                    "description": "The body of command, (not include MSmart protocol head and cheksum at the end)"
-                }
-            }
+        "description": "Login and storage your Midea account only for getting the appliance info.\nYou can remove this configuration after all appliance configured.",
+        "title": "Login"
+      },
+      "discovery": {
+        "description": "IP address for device, enter \"auto\" to discover automatically\nYou can also use an IP address to search within a specified network, such as \"192.168.1.255\"",
+        "title": "Search",
+        "data": {
+          "ip_address": "IP address"
         }
+      },
+      "list": {
+        "description": "{table}",
+        "title": "Appliances"
+      },
+      "auto": {
+        "data": {
+          "device": "Appliances"
+        },
+        "description": "Choose a appliance to add",
+        "title": "New appliance found"
+      },
+      "manually": {
+        "data": {
+          "name": "Name (e.g. Living room AC)",
+          "device_id": "Appliance code",
+          "type": "Type",
+          "ip_address": "IP address",
+          "port": "Port",
+          "model": "Model",
+          "subtype": "Subtype",
+          "protocol": "Protocol",
+          "token": "Token",
+          "key": "Key"
+        },
+        "description": "Configuration of appliance",
+        "title": "New appliance"
+      }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "ip_address": "IP address",
+          "refresh_interval": "Refresh interval (0 means not refreshing actively)",
+          "sensors": "Extra sensors",
+          "switches": "Extra controls",
+          "customize": "Customize"
+        },
+        "title": "Configure"
+      }
+    },
+    "abort": {
+      "account_option": "The account does not supports this operation.\nClick \"ADD DEVICE\" to  add a new device."
+    }
+  },
+  "services": {
+    "set_attribute": {
+      "name": "Set attribute",
+      "description": "Set the attribute value of device",
+      "fields": {
+        "device_id": {
+          "name": "Appliance code",
+          "description": "The appliance code (Device ID) of appliance"
+        },
+        "attribute": {
+          "name": "Attribute",
+          "description": "The attribute name want to set"
+        },
+        "value": {
+          "name": "Value",
+          "description": "The attribute value want to set"
+        }
+      }
+    },
+    "send_command": {
+      "name": "Customize command",
+      "description": "Send a customize command to device",
+      "fields": {
+        "device_id": {
+          "name": "Appliance code",
+          "description": "The appliance code (Device ID) of appliance"
+        },
+        "cmd_type": {
+          "name": "command type",
+          "description": "The type of command，should be 3（query) or 2（set)"
+        },
+        "cmd_body": {
+          "name": "command body",
+          "description": "The body of command, (not include MSmart protocol head and cheksum at the end)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "select": {
+      "dryer_program": {
+        "name": "Program",
+        "state": {
+          "cotton": "Cotton",
+          "fiber": "Fiber",
+          "mixed_wash": "Mixed Wash",
+          "jean": "Jean",
+          "bedsheet": "Bedsheet",
+          "outdoor": "Outdoor",
+          "down_jacket": "Down Jacket",
+          "plush": "Plush",
+          "wool": "Wool",
+          "dehumidify": "Dehumidify",
+          "cold_air_fresh_air": "Cold Air Fresh",
+          "hot_air_dry": "Hot Air Dry",
+          "sport_clothes": "Sport Clothes",
+          "underwear": "Underwear",
+          "baby_clothes": "Baby Clothes",
+          "shirt": "Shirt",
+          "standard": "Standard",
+          "quick_dry": "Quick Dry",
+          "fresh_air": "Fresh Air",
+          "low_temp_dry": "Low Temp Dry",
+          "eco_dry": "Eco Dry",
+          "quick_dry_30": "Quick Dry 30min",
+          "towel": "Towel",
+          "intelligent_dry": "Intelligent Dry",
+          "steam_care": "Steam Care",
+          "big": "Big",
+          "fixed_time_dry": "Fixed Time Dry",
+          "night_dry": "Night Dry",
+          "bracket_dry": "Bracket Dry",
+          "western_trouser": "Western Trouser",
+          "dehumidification": "Dehumidification",
+          "smart_dry": "Smart Dry",
+          "four_piece_suit": "Four Piece Suit",
+          "warm_clothes": "Warm Clothes",
+          "quick_dry_20": "Quick Dry 20min",
+          "steam_sterilize": "Steam Sterilize",
+          "enzyme": "Enzyme",
+          "big_60": "Big 60min",
+          "steam_no_iron": "Steam No Iron",
+          "air_wash": "Air Wash",
+          "bed_clothes": "Bed Clothes",
+          "little_fast_dry": "Little Fast Dry",
+          "small_piece_dry": "Small Piece Dry",
+          "big_dry": "Big Dry",
+          "wool_nurse": "Wool Nurse",
+          "sun_quilt": "Sun Quilt",
+          "fresh_remove_smell": "Fresh Remove Smell",
+          "bucket_self_clean": "Filter Self Clean",
+          "silk": "Silk",
+          "sterilize": "Sterilize"
+        }
+      }
+    }
+  }
 }
