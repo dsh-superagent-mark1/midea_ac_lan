@@ -258,6 +258,47 @@ class MeijuCloud(MideaCloud):
             return homes
         return None
 
+    async def get_keys(self, appliance_id: int):
+        """美的美居 (Meiju) 云使用 /v2/iot/secure/getToken 获取本地控制 token/key。
+
+        与 MSmartHome 云的 /v1/iot/secure/getToken 不同，Meiju 云需要
+        applianceCodes(设备 ID)、udpid、homegroupId 三个参数，返回
+        tokenlist[].{token, key}。
+        """
+        result = {}
+        # 定位设备所属 homegroupId
+        home_group_ids = []
+        if homes := await self.list_home():
+            home_group_ids = [int(home_id) for home_id in homes]
+        # 兜底：若无 home 列表，尝试直接拿设备信息定位（homegroupId 不参与匹配，先试空）
+        for method in [1, 2]:
+            udp_id = self._security.get_udp_id(appliance_id, method)
+            for home_group_id in (home_group_ids if home_group_ids else [None]):
+                data = self._make_general_data()
+                body = {
+                    "applianceCodes": [str(appliance_id)],
+                    "udpid": udp_id,
+                }
+                if home_group_id is not None:
+                    body["homegroupId"] = str(home_group_id)
+                data.update(body)
+                response = await self._api_request(
+                    endpoint="/v2/iot/secure/getToken",
+                    data=data
+                )
+                if response and "tokenlist" in response:
+                    for token in response["tokenlist"]:
+                        if token.get("udpId") == udp_id:
+                            result[method] = {
+                                "token": token["token"].lower(),
+                                "key": token["key"].lower()
+                            }
+                            break
+                if method in result:
+                    break
+        result.update(default_keys)
+        return result
+
     async def list_appliances(self, home_id) -> dict | None:
         data = {
             "homegroupId": home_id
