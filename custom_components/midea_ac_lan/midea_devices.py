@@ -1522,6 +1522,17 @@ MIDEA_DEVICES = {
                 "name": "Start",
                 "icon": "mdi:motion-play-outline"
             },
+            DCAttributes.program: {
+                "type": Platform.SELECT,
+                "name": "Program",
+                "options": "preset_modes",
+                "icon": "mdi:tumble-dryer"
+            },
+            DCAttributes.running_status: {
+                "type": Platform.SENSOR,
+                "name": "Running Status",
+                "icon": "mdi:state-machine"
+            },
         }
     },
     0xE1: {

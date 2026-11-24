@@ -1,5 +1,7 @@
 import logging
 from .message import (
+    DRYER_PROGRAMS,
+    PROGRAM_BY_VALUE,
     MessageQuery,
     MessagePower,
     MessageStart,
@@ -17,6 +19,8 @@ _LOGGER = logging.getLogger(__name__)
 class DeviceAttributes(StrEnum):
     power = "power"
     start = "start"
+    program = "program"
+    running_status = "running_status"
     washing_data = "washing_data"
     progress = "progress"
     time_remaining = "time_remaining"
@@ -50,10 +54,17 @@ class MideaDADevice(MiedaDevice):
             attributes={
                 DeviceAttributes.power: False,
                 DeviceAttributes.start: False,
+                DeviceAttributes.program: "unknown",
+                DeviceAttributes.running_status: "unknown",
                 DeviceAttributes.washing_data: bytearray([]),
                 DeviceAttributes.progress: "Unknown",
                 DeviceAttributes.time_remaining: None
             })
+
+    @property
+    def preset_modes(self):
+        """All program names supported by the dryer, as HA select options."""
+        return list(DRYER_PROGRAMS.keys())
 
     def build_query(self):
         return [MessageQuery(self._protocol_version)]
@@ -78,11 +89,28 @@ class MideaDADevice(MiedaDevice):
             message = MessagePower(self._protocol_version)
             message.power = value
             self.build_send(message)
+        elif attr == DeviceAttributes.program:
+            # Selecting a program only stores it locally until the next
+            # start; starting with program=None keeps whatever the device
+            # currently has.
+            self._attributes[DeviceAttributes.program] = value
         elif attr == DeviceAttributes.start:
             message = MessageStart(self._protocol_version)
             message.start = value
             message.washing_data = self._attributes[DeviceAttributes.washing_data]
+            current = self._attributes.get(DeviceAttributes.program)
+            message.program = DRYER_PROGRAMS.get(current) if isinstance(current, str) else None
             self.build_send(message)
+
+    def start_with_program(self, value: bool, program: str = None):
+        """Start/stop the dryer with an explicit program name."""
+        message = MessageStart(self._protocol_version)
+        message.start = value
+        message.washing_data = self._attributes[DeviceAttributes.washing_data]
+        if program is not None and program in DRYER_PROGRAMS:
+            message.program = DRYER_PROGRAMS[program]
+            self._attributes[DeviceAttributes.program] = program
+        self.build_send(message)
 
 
 class MideaAppliance(MideaDADevice):
